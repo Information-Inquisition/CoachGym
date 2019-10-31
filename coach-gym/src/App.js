@@ -30,11 +30,8 @@ class App extends React.Component {
     
     // This binding is necessary to make `this` work in the callback
     this.handleClick = this.handleClick.bind(this);
-    this.handleDateChange = this.handleDateChange.bind(this);
   }
 
-  
-  
   handleClick = () => {
     const { signIn } = this.state;
     if (signIn) {
@@ -42,13 +39,7 @@ class App extends React.Component {
     } else {
       this.setState({ signIn: true });
     }
-  }
-  
-  handleDateChange = date => {
-    this.setState({selectedDate: date});
-  };
-
-  
+  }  
 
   render() {
     const {signIn} = this.state;
