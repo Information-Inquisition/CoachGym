@@ -1,4 +1,6 @@
 import React, {Component} from 'react';
+import { BrowserRouter as Router, Switch, Route, Link, Redirect } from 'react-router-dom';
+
 import PropTypes from 'prop-types';
 import '@material-ui/core';
 import './Login.css';
@@ -27,6 +29,7 @@ class Login extends Component {
     this.state = {
       signIn: true,
       userType: "client",
+      validLogin: false,
     };
 
     
@@ -34,7 +37,11 @@ class Login extends Component {
     this.handleClick = this.handleClick.bind(this);
     this.handleUserType = this.handleUserType.bind(this);
     this.validateClientForm = this.validateClientForm.bind(this);
+    this.validateLogin = this.validateLogin.bind(this);
 
+  }
+
+  componentDidMount(){
   }
 
   handleClick = () => {
@@ -102,19 +109,24 @@ class Login extends Component {
   }
 
   validateLogin = () => {
-
+    this.setState({ validLogin: true });
   }
 
-  onLogin = () => {
-    return 
-  }
+
   render() {
     const {
       signIn,
       userType,
+      validLogin,
     } = this.state;
     const { classes } = this.props;
 
+    if (validLogin === true){
+      console.log(validLogin);
+      return <Redirect to='/trainer' />
+    }
+    console.log(validLogin);
+    
     return (
       <div className="App">
         <div id="title">
@@ -151,22 +163,22 @@ class Login extends Component {
                 />
               </div> 
               <div className="button">
-                <Button 
-                  variant="contained" 
-                  color="primary"
-                  onLogin={this.onLogin}
-                >
-                  Log In
-                </Button>
+                  <Button 
+                    variant="contained" 
+                    color="primary"
+                    onClick={this.validateLogin}
+                  >
+                    Log In
+                  </Button>
               </div>
             </form>
             <div className="button">
-              <Button
-                variant="contained"
-                onClick = {this.handleClick}
-              >
-                Sign Up
-              </Button>
+                <Button 
+                  variant="contained"
+                  onClick = {this.handleClick}
+                >
+                  Sign Up
+                </Button>
             </div>
           </div>
         }

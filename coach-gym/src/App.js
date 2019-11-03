@@ -20,7 +20,14 @@ import {KeyboardDatePicker} from '@material-ui/pickers'
 class App extends Component {
     render(){
       return (
-        <Login/>
+        <Router>
+        <div>
+          <Switch>
+              <Route exact path='/' component={Login} />
+              <Route exact path='/trainer' component={Trainer} />
+          </Switch>
+        </div>
+      </Router>
     );
   }
 }
