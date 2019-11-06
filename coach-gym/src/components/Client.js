@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { BrowserRouter as Router, Switch, Route, Link, Redirect } from 'react-router-dom';
+import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
 import '.././App.css';
 import { withStyles } from '@material-ui/styles';
 import PropTypes from 'prop-types';
@@ -14,60 +14,25 @@ const styles = {
         left: '5px',
         top: '5px',
     },
-    button: {
-        margin: '15px',
-    }
 
 }
 
-class Trainer extends Component {
+class Client extends Component {
     constructor(props){
         super(props);
-        this.state = {
-            viewWork: false,
-            createWork: false,
-        }
         this.goBack = this.goBack.bind(this);
-        this.goToViewWorkouts = this.goToViewWorkouts.bind(this);
     }
-
     goBack = () => {
+        console.log(this.props.history);
         this.props.history.push('/');
     }
-
-
-    goToViewWorkouts = () => {
-        this.setState({ viewWork: true });
-    }
-
-    goToCreateWorkout = () => {
-        this.setState({ createWork: true });
-    }
-
   render() {
     const { classes } = this.props;
-    const {
-        viewWork,
-        createWork,
-    } = this.state;
-
-
-    if (viewWork){
-        return <Redirect to={{
-                            pathname: '/workoutviewer',
-                            state: {userType: 'trainer'}
-                        }}/>
-    }
-
-    if (createWork){
-        //redirect
-    }
-
     return (
         <div className="App">
             <header className="App-header">
                 <h1>
-                    Welcome Trainer!                    
+                    Welcome Client!                    
                 </h1>
             </header>
             <Button className={classes.backBut}
@@ -78,24 +43,12 @@ class Trainer extends Component {
             >
                 Back
             </Button>
-
             <div>
                 <Button className={classes.button}
                     variant="contained"
                     color="primary"
                     margin="normal"
                     size="large"
-                >
-                    Create Workout
-                </Button>
-            </div>
-            <div>
-                <Button className={classes.button}
-                    variant="contained"
-                    color="primary"
-                    margin="normal"
-                    size="large"
-                    onClick={this.goToViewWorkouts}
                 >
                     View Workouts
                 </Button>
@@ -108,4 +61,4 @@ class Trainer extends Component {
   }
 }
 
-export default withStyles(styles)(Trainer);
+export default withStyles(styles)(Client);

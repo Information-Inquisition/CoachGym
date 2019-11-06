@@ -14,6 +14,7 @@ import {
   withStyles
 } from '@material-ui/core';
 import {KeyboardDatePicker} from '@material-ui/pickers'
+import { conditionalExpression } from '@babel/types';
 
 const styles = {
   textField: {
@@ -30,18 +31,18 @@ class Login extends Component {
       signIn: true,
       userType: "client",
       validLogin: false,
+      errors: [false, false, false, false, false, 
+        false, false, false, false, false, false, false], 
+
     };
 
-    
     // This binding is necessary to make `this` work in the callback
     this.handleClick = this.handleClick.bind(this);
     this.handleUserType = this.handleUserType.bind(this);
     this.validateClientForm = this.validateClientForm.bind(this);
+    this.validateTrainerForm = this.validateTrainerForm.bind(this);
     this.validateLogin = this.validateLogin.bind(this);
 
-  }
-
-  componentDidMount(){
   }
 
   handleClick = () => {
@@ -54,12 +55,15 @@ class Login extends Component {
   } 
   
   handleUserType = (event) => {
-    this.setState({ userType: event.target.value });
+    this.setState({ 
+      userType: event.target.value,
+      errors: [false, false, false, false, false, 
+        false, false, false, false, false, false, false]
+    });
   }
 
   validateClientForm = (event) => {
     event.preventDefault();
-    console.log("form submitted");
     const username = event.target.username.value;
     const password1 = event.target.password1.value;
     const password2 = event.target.password2.value;
@@ -68,23 +72,53 @@ class Login extends Component {
     const weightCurr = event.target.weightCurr.value;
     const height = event.target.height.value;
     const weightGoal = event.target.weightGoal.value;
+
+    var err = [false, false, false, false, false, 
+      false, false, false, false, false, false, false];
+
+    //check bday
     if (!this.isValidDate(birthdate)) {
-      event.target.birthdate.styles = {error: true};
+      console.log("Err: bday not valid");
+      err[4] = true;
     }
+
+    //check name
+    for (var i = 0; i < name.length; i++){
+      if (!name.charAt(i).match(/^[0-9a-z]+$/)){
+          console.log("Err: name not valid");
+          err[3] = true;
+      }
+    }
+
+    //check passwords
+    if(password1 !== password2){
+      console.log("Err: passwords do not match");
+      err[1] = true;
+      err[2] = true;
+    }
+
+    //check weights and height
+    if (weightCurr < 0){
+      err[5] = true;
+    }
+    if (height < 0){
+      err[6] = true;
+    }
+    if (weightGoal < 0){
+      err[7] = true;
+    }
+    
+    this.setState ({ errors: err });
   }
 
   //date validation source code:
   //https://stackoverflow.com/questions/6177975/how-to-validate-date-with-format-mm-dd-yyyy-in-javascript
-
   isValidDate = (dateString) => {
     // Parse the date parts to integers
     var parts = dateString.split("-");
     var day = parseInt(parts[2], 10);
     var month = parseInt(parts[1], 10);
     var year = parseInt(parts[0], 10);
-    console.log(day);
-    console.log(month);
-    console.log(year);
 
     // Check the ranges of month and year
     if(year < 1000 || year > 3000 ) {
@@ -104,12 +138,42 @@ class Login extends Component {
     return day > 0 && day <= monthLength[month - 1];
   }
 
-  validateTrainerForm = () => {
+  validateTrainerForm = (event) => {
+    //check if trainer form is complete
+    event.preventDefault();
+    const username = event.target.username.value;
+    const password1 = event.target.password1.value;
+    const password2 = event.target.password2.value;
+    const name = event.target.name.value;
 
+    var err = [false, false, false, false, false, 
+      false, false, false, false, false, false, false]
+
+    //check passwords
+    if(password1 !== password2){
+      console.log("Err: passwords do not match");
+      err[9] = true;
+      err[10] = true;
+    }
+
+    //check name
+    for (var i = 0; i < name.length; i++){
+      if (!name.charAt(i).match(/^[0-9a-z]+$/)){
+          console.log("Err: name not valid");
+          err[11] = true;
+      }
+    }
+
+    this.setState ({ errors: err });    
   }
 
   validateLogin = () => {
-    this.setState({ validLogin: true });
+    //CHECK IF USER IS IN DATABASE HERE, //
+    //THEN OPEN CORRECT PAGE             //
+    const { validLogin } = this.state;
+    if (validLogin === false) {
+      this.props.history.push('/trainer');
+    }
   }
 
 
@@ -118,14 +182,13 @@ class Login extends Component {
       signIn,
       userType,
       validLogin,
+      errors,
     } = this.state;
     const { classes } = this.props;
 
-    if (validLogin === true){
-      console.log(validLogin);
-      return <Redirect to='/trainer' />
-    }
-    console.log(validLogin);
+    // if (validLogin === true){
+    //   return <Redirect to='/trainer' />
+    // }
     
     return (
       <div className="App">
@@ -209,6 +272,7 @@ class Login extends Component {
                   id="username"
                   label="Username"
                   margin="normal"
+                  error={errors[0]}
                 />
               </div>
               <div>
@@ -218,6 +282,7 @@ class Login extends Component {
                   label="Password"
                   type="password"
                   margin="normal"
+                  error={errors[1]}
                 />
               </div>
               <div>
@@ -227,6 +292,7 @@ class Login extends Component {
                   label="Confirm Password"
                   type="password"
                   margin="normal"
+                  error={errors[2]}
                 />
               </div>
               <div>
@@ -236,6 +302,7 @@ class Login extends Component {
                     id="name"
                     label="Name"
                     margin="normal"
+                    error={errors[3]}
                     className={classes.textField}
                   />
                   <TextField
@@ -243,6 +310,7 @@ class Login extends Component {
                     id="birthdate"
                     label="Birthdate"
                     type="date"
+                    error={errors[4]}
                     defaultValue="2017-05-24T10:30"
                     InputLabelProps={{
                       shrink: true,
@@ -260,6 +328,7 @@ class Login extends Component {
                       label="Current Weight"
                       type="number"
                       margin="normal"
+                      error={errors[5]}
                       className={classes.textField}
                     />
       
@@ -269,6 +338,7 @@ class Login extends Component {
                     label="Height"
                     type="number"
                     margin="normal"
+                    error={errors[6]}
                     className={classes.textField}
                   />
                 </span>
@@ -280,6 +350,7 @@ class Login extends Component {
                     label="Goal Weight"
                     type="number"
                     margin="normal"
+                    error={errors[7]}
                     className={classes.textField}
                   /> 
               </div> 
@@ -310,6 +381,7 @@ class Login extends Component {
               id="createTrainer"
               className="container" 
               autoComplete="off"
+              onSubmit={this.validateTrainerForm}
             >
               <div>
                 <Select
@@ -328,6 +400,7 @@ class Login extends Component {
                   id="username"
                   label="Username"
                   margin="normal"
+                  error={errors[8]}
                 />
               </div>
               <div>
@@ -337,6 +410,7 @@ class Login extends Component {
                   label="Password"
                   type="password"
                   margin="normal"
+                  error={errors[9]}
                 />
               </div>
               <div>
@@ -346,6 +420,7 @@ class Login extends Component {
                   label="Confirm Password"
                   type="password"
                   margin="normal"
+                  error={errors[10]}
                 />
               </div>
               <div>
@@ -354,6 +429,7 @@ class Login extends Component {
                   id="name"
                   label="Name"
                   margin="normal"
+                  error={errors[11]}
                   className={classes.textField}
                 />            
               </div> 
@@ -361,6 +437,7 @@ class Login extends Component {
                 <Button 
                   variant="contained" 
                   color="primary"
+                  type="submit"
                 >
                   Create Account
                 </Button>

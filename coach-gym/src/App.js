@@ -2,6 +2,9 @@ import React, {Component} from 'react';
 import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
 import Login from './components/Login';
 import Trainer from './components/Trainer';
+import Client from './components/Client';
+import WorkoutViewer from './components/WorkoutViewer';
+
 import PropTypes from 'prop-types';
 import logo from './logo.svg';
 import '@material-ui/core';
@@ -25,6 +28,8 @@ class App extends Component {
           <Switch>
               <Route exact path='/' component={Login} />
               <Route exact path='/trainer' component={Trainer} />
+              <Route exact path='/client' component={Client} />
+              <Route exact path='/workoutviewer' component={WorkoutViewer} />
           </Switch>
         </div>
       </Router>
