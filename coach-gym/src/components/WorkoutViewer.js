@@ -44,7 +44,7 @@ class WorkoutViewer extends Component {
         <div className="App">
             <header className="App-header">
                 <h1>
-                   Workout Viewer                    
+                   Workout Viewer for {userType}                 
                 </h1>
             </header>
             <Button className={classes.backBut}
@@ -58,7 +58,7 @@ class WorkoutViewer extends Component {
             <div className={classes.panel}>
                 <ExpansionPanel>        
                     <ExpansionPanelSummary>
-                            Workout Name
+                        Workout Name
                     </ExpansionPanelSummary>
                     <ExpansionPanelDetails>
                     <p>

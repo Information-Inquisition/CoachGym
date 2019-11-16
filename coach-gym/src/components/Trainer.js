@@ -56,11 +56,14 @@ class Trainer extends Component {
         return <Redirect to={{
                             pathname: '/workoutviewer',
                             state: {userType: 'trainer'}
-                        }}/>
+                }}/>
     }
 
     if (createWork){
-        //redirect
+        return <Redirect to={{
+                            pathname: '/workoutcreator',
+                            state: {userType: 'trainer'}
+        }}/>
     }
 
     return (
@@ -85,6 +88,7 @@ class Trainer extends Component {
                     color="primary"
                     margin="normal"
                     size="large"
+                    onClick={this.goToCreateWorkout}
                 >
                     Create Workout
                 </Button>

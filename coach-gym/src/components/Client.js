@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Switch, Route, Link, Redirect } from 'react-router-dom';
 import '.././App.css';
 import { withStyles } from '@material-ui/styles';
 import PropTypes from 'prop-types';
@@ -20,14 +20,32 @@ const styles = {
 class Client extends Component {
     constructor(props){
         super(props);
+        this.state = {
+            viewWork: false,
+        }
         this.goBack = this.goBack.bind(this);
     }
+
     goBack = () => {
         console.log(this.props.history);
         this.props.history.push('/');
     }
-  render() {
+
+    goToViewWorkouts = () => {
+        this.setState({ viewWork: true });
+    }
+
+    render() {
     const { classes } = this.props;
+    const {viewWork} = this.state;
+
+    if (viewWork){
+        return <Redirect to={{
+                            pathname: '/workoutviewer',
+                            state: {userType: 'client'}
+                }}/>
+    }
+
     return (
         <div className="App">
             <header className="App-header">
@@ -49,6 +67,7 @@ class Client extends Component {
                     color="primary"
                     margin="normal"
                     size="large"
+                    onClick={this.goToViewWorkouts}
                 >
                     View Workouts
                 </Button>

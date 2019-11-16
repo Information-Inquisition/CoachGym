@@ -4,6 +4,8 @@ import Login from './components/Login';
 import Trainer from './components/Trainer';
 import Client from './components/Client';
 import WorkoutViewer from './components/WorkoutViewer';
+import WorkoutCreator from './components/WorkoutCreator';
+
 
 import PropTypes from 'prop-types';
 import logo from './logo.svg';
@@ -30,6 +32,7 @@ class App extends Component {
               <Route exact path='/trainer' component={Trainer} />
               <Route exact path='/client' component={Client} />
               <Route exact path='/workoutviewer' component={WorkoutViewer} />
+              <Route exact path='/workoutcreator' component={WorkoutCreator} />
           </Switch>
         </div>
       </Router>

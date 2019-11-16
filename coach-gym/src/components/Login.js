@@ -170,6 +170,14 @@ class Login extends Component {
   validateLogin = () => {
     //CHECK IF USER IS IN DATABASE HERE, //
     //THEN OPEN CORRECT PAGE             //
+    /* if username and password are in database{
+      if usertype is trainer {
+        open trainer home
+      } else {
+        open client home
+      }
+    }
+    */
     const { validLogin } = this.state;
     if (validLogin === false) {
       this.props.history.push('/trainer');
@@ -209,9 +217,11 @@ class Login extends Component {
               id="signIn" 
               className="container" 
               autoComplete="off"
+              onSubmit={this.validateLogin}
             >
               <div>
                 <TextField
+                  required
                   margin="normal" 
                   id="username"
                   label="Username"
@@ -219,6 +229,7 @@ class Login extends Component {
               </div>
               <div>
                 <TextField
+                  required
                   margin="normal"
                   id="password"
                   label="Password"
@@ -229,7 +240,7 @@ class Login extends Component {
                   <Button 
                     variant="contained" 
                     color="primary"
-                    onClick={this.validateLogin}
+                    type="submit"
                   >
                     Log In
                   </Button>
