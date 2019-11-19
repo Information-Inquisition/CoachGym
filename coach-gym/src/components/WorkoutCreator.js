@@ -13,13 +13,12 @@ import {
     FormControl,
     FormControlLabel,
     FormLabel,
-    Checkbox
+    Checkbox,
+    TextField
 
 } from '@material-ui/core';
 
 const styles = {
-    header: {
-    },
     backBut: {
         position: 'absolute',
         left: '5px',
@@ -28,23 +27,46 @@ const styles = {
     panel: {
         margin: 'auto',
         width: '65%',
+    },
+    nameInput: {
+        position: 'relative',
+        top: '-30px',
+    },
+    nameHeader: {
+        position: 'relative',
+        top: '0px',
+        fontSize: '18px',
+        color: 'navy',
+    },
+    genButton: {
+        position: 'relative',
+        top: '50px',
     }
-
 }
 
 class WorkoutCreator extends Component {
     constructor(props){
         super(props);
         this.goBack = this.goBack.bind(this);
+        this.handleGenerateWorkout = this.handleGenerateWorkout.bind(this);
     }
     goBack = () => {
         this.props.history.push('/trainer');
     }
+
+    handleGenerateWorkout = (event) => {
+        event.preventDefault();
+        console.log("generate workout");
+
+        //////////////////////////////////
+        // WORKOUT GENERATION HERE?
+        ////////////////////////////////////
+    }
+
   render() {
     const { classes } = this.props;
     const { userType } = this.props.location.state;
 
-    console.log(userType);
     return (
         <div className="App">
             <header className="App-header">
@@ -55,12 +77,28 @@ class WorkoutCreator extends Component {
                 </div>
                 
             </header>
-            <div className="App-header2">
-                <h2>
-                    Choose target muscle groups
-                </h2>
-            </div>
-            <FormControl id="muscle-groups">
+           <form
+                id="muscle-groups"
+                onSubmit={this.handleGenerateWorkout}
+           >
+            <FormControl>
+                <div className={classes.nameHeader}>
+                    <h2>
+                        Name this Workout
+                    </h2>
+                </div>
+                <TextField
+                    className={classes.nameInput}
+                    required
+                    label="Workout Name"
+                    id="workout-name"
+                    margin="normal"
+                />
+                <div className={classes.nameHeader}>
+                    <h2>
+                        Choose target muscle groups
+                    </h2>
+                </div>
                 <FormGroup aria-label="position" column>
                     <div>
                         <FormControlLabel
@@ -95,8 +133,16 @@ class WorkoutCreator extends Component {
                         />
                     </div>
                 </FormGroup>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    type="submit"
+                    className={classes.genButton}
+                >
+                    Generate Workout
+                </Button>
             </FormControl>
-
+            </form>
 
 
             <Button className={classes.backBut}

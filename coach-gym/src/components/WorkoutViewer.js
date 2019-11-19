@@ -9,12 +9,23 @@ import {
     ExpansionPanel,
     ExpansionPanelDetails,
     ExpansionPanelSummary,
+    List,
+    ListItem,
+    ListItemAvatar,
+    ListItemIcon,
+    ListItemSecondaryAction,
+    IconButton,
+    ListItemText,
+    Checkbox,
+    Typography,
+        FormControlLabel,
+        
 
 } from '@material-ui/core';
 
+import DeleteIcon from '@material-ui/icons/Delete';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 const styles = {
-    header: {
-    },
     backBut: {
         position: 'absolute',
         left: '5px',
@@ -24,9 +35,7 @@ const styles = {
         margin: 'auto',
         width: '65%',
     }
-
 }
-
 class WorkoutViewer extends Component {
     constructor(props){
         super(props);
@@ -55,19 +64,48 @@ class WorkoutViewer extends Component {
             >
                 Back
             </Button>
+
+
             <div className={classes.panel}>
-                <ExpansionPanel>        
-                    <ExpansionPanelSummary>
-                        Workout Name
-                    </ExpansionPanelSummary>
-                    <ExpansionPanelDetails>
-                    <p>
-                        Exercises
-                    </p>
-                    </ExpansionPanelDetails>
-                </ExpansionPanel>
+            <ExpansionPanel>
+        <ExpansionPanelSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-label="Expand"
+          aria-controls="additional-actions1-content"
+          id="additional-actions1-header"
+        >
+          <FormControlLabel
+            aria-label="Deletion"
+            onClick={event => event.stopPropagation()}
+            onFocus={event => event.stopPropagation()}
+            control={<Checkbox />}
+            label="Workout Name"
+          />
+        </ExpansionPanelSummary>
+        <ExpansionPanelDetails>
+          <Typography color="textSecondary">
+            Exercises
+          </Typography>
+        </ExpansionPanelDetails>
+      </ExpansionPanel>
             </div>
-        </div>
+
+            <List
+                className={classes.panel}
+            >
+                <ListItem button>
+                  <ListItemText
+                    primary="Workout Name"
+                  />
+                  <ListItemSecondaryAction>
+                    <IconButton edge="end" aria-label="delete">
+                      <DeleteIcon />
+                    </IconButton>
+                  </ListItemSecondaryAction>
+                </ListItem>
+            </List>
+            </div>
+
     );
   }
   static propTypes = {
