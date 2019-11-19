@@ -34,6 +34,10 @@ const styles = {
     panel: {
         margin: 'auto',
         width: '65%',
+    },
+    workName: {
+      position: 'relative',
+      right: '-525px',
     }
 }
 class WorkoutViewer extends Component {
@@ -47,6 +51,11 @@ class WorkoutViewer extends Component {
   render() {
     const { classes } = this.props;
     const { userType } = this.props.location.state;
+
+    const workouts = [
+     {label: "Workout1", exercise: "pull up"},
+     {label: "Workout2", exercise: "pull down"},   
+    ]
 
     console.log(userType);
     return (
@@ -65,46 +74,37 @@ class WorkoutViewer extends Component {
                 Back
             </Button>
 
-
             <div className={classes.panel}>
-            <ExpansionPanel>
-        <ExpansionPanelSummary
-          expandIcon={<ExpandMoreIcon />}
-          aria-label="Expand"
-          aria-controls="additional-actions1-content"
-          id="additional-actions1-header"
-        >
-          <FormControlLabel
-            aria-label="Deletion"
-            onClick={event => event.stopPropagation()}
-            onFocus={event => event.stopPropagation()}
-            control={<Checkbox />}
-            label="Workout Name"
-          />
-        </ExpansionPanelSummary>
-        <ExpansionPanelDetails>
-          <Typography color="textSecondary">
-            Exercises
-          </Typography>
-        </ExpansionPanelDetails>
-      </ExpansionPanel>
-            </div>
-
-            <List
-                className={classes.panel}
-            >
-                <ListItem button>
-                  <ListItemText
-                    primary="Workout Name"
+              {workouts.map(workout => (
+                <ExpansionPanel>
+                <ExpansionPanelSummary
+                  expandIcon={<ExpandMoreIcon />}
+                  aria-label="Expand"
+                  aria-controls="additional-actions1-content"
+                  id="additional-actions1-header"
+                >
+                  <FormControlLabel
+                    aria-label="Deletion"
+                    onClick={event => event.stopPropagation()}
+                    onFocus={event => event.stopPropagation()}
+                    control={<DeleteIcon 
+                              button 
+                              id="delete"
+                              className={classes.workName}
+                              onClick={()=> console.log("delete")}
+                      />}
+                    label={workout.label}
                   />
-                  <ListItemSecondaryAction>
-                    <IconButton edge="end" aria-label="delete">
-                      <DeleteIcon />
-                    </IconButton>
-                  </ListItemSecondaryAction>
-                </ListItem>
-            </List>
+                </ExpansionPanelSummary>
+                <ExpansionPanelDetails>
+                  <Typography color="textSecondary">
+                    {workout.exercise}
+                  </Typography>
+                </ExpansionPanelDetails>
+              </ExpansionPanel>
+              ))}
             </div>
+        </div>
 
     );
   }
