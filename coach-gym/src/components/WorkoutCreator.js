@@ -20,7 +20,8 @@ import {
     DialogContent,
     DialogContentText,
     DialogTitle,
-
+    Select,
+    MenuItem
 } from '@material-ui/core';
 
 const styles = {
@@ -55,6 +56,8 @@ class WorkoutCreator extends Component {
         this.state = {
             targetMuscles: [false, false, false, false],
             isGenerated: false,
+            difficulty: 'easy',
+            exerType: 'free-weight',
         };
 
         this.goBack = this.goBack.bind(this);
@@ -78,7 +81,7 @@ class WorkoutCreator extends Component {
 
         this.setState({isGenerated: true});
     }
-    
+
     handleClose = () => {
         this.setState({isGenerated: false});
     }
@@ -98,11 +101,23 @@ class WorkoutCreator extends Component {
         }
         this.setState({targetMuscles: tM});
     }
+    
+    handleDifficulty = (event) => {
+        this.setState({ difficulty: event.target.value })
+    }
+
+    handleExerType = (event) => {
+        this.setState({ exerType: event.target.value })
+    }
 
   render() {
     const { classes } = this.props;
     const { userType } = this.props.location.state;
-    const {isGenerated } = this.state;
+    const {
+        isGenerated,
+        difficulty,
+        exerType
+    } = this.state;
 
     
     return (
@@ -131,6 +146,44 @@ class WorkoutCreator extends Component {
                     id="workout-name"
                     margin="normal"
                 />
+                <TextField
+                    className={classes.nameInput}
+                    required
+                    label="Client Name"
+                    id="client-name"
+                    margin="normal"
+                />
+                <div className={classes.nameHeader}>
+                    <h2>
+                        Difficulty:
+                    </h2>
+                    <Select
+                    labelId="difficulty-lvl"
+                    id="difficulty-lvl"
+                    value={difficulty}
+                    onChange={this.handleDifficulty} 
+                    >
+                    <MenuItem value="easy">Easy</MenuItem>
+                    <MenuItem value="medium">Medium</MenuItem>
+                    <MenuItem value="hard">Hard</MenuItem>
+                    </Select>
+                </div>
+                <div className={classes.nameHeader}>
+                    <h2>
+                        Types of Exercises:
+                    </h2>
+                    <Select
+                    labelId="exercise-type"
+                    id="exercise-type"
+                    value={exerType}
+                    onChange={this.handleExerType} 
+                    >
+                    <MenuItem value="free-weight">Free Weight</MenuItem>
+                    <MenuItem value="body-weight">Body Weight</MenuItem>
+                    <MenuItem value="both">Both</MenuItem>
+                    </Select>
+                </div>
+
                 <div className={classes.nameHeader}>
                     <h2>
                         Choose target muscle groups
