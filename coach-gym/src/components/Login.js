@@ -28,6 +28,7 @@ class Login extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      books: [],
       signIn: true,
       userType: "client",
       validLogin: false,
@@ -184,9 +185,33 @@ class Login extends Component {
     }
   }
 
+  // async componentDidMount() {
+	// 	try {
+	// 		let r = await fetch('/api/books');
+	// 		let books = await r.json();
+	// 		this.setState({ books });
+	// 	} catch (error) {
+	// 		console.log(error);
+	// 	}
+  // }
+
+  componentDidMount() {
+    this.getBooks();
+  }
+  
+  getBooks = () => {
+    fetch('http://localhost:4000/books' )
+      .then(response => response.json())
+      .then(({data}) => {
+        console.log(data);
+        this.setState({ books: data })
+      } )
+      .catch(err => console.error(err));
+  }
 
   render() {
     const {
+      books,
       signIn,
       userType,
       validLogin,
@@ -200,6 +225,11 @@ class Login extends Component {
     
     return (
       <div className="App">
+        <ul>
+            {books.map(book => {
+              return <li>{book.Title}</li>
+            })}
+        </ul>
         <div id="title">
           <header className="App-header">
           <h1>
