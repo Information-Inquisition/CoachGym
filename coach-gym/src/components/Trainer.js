@@ -26,6 +26,7 @@ class Trainer extends Component {
         this.state = {
             viewWork: false,
             createWork: false,
+            user: [],
         }
         this.goBack = this.goBack.bind(this);
         this.goToViewWorkouts = this.goToViewWorkouts.bind(this);
@@ -44,33 +45,51 @@ class Trainer extends Component {
         this.setState({ createWork: true });
     }
 
+    getUser = () =>{
+        const {id } = this.props.location.state;
+        fetch(`http://localhost:4000/get/user/trainer?t_id=${id}`)
+        .then(response => response.json())
+        .then(({data}) => {
+            this.setState({ user: data })
+          } )
+        .catch(err => console.error(err));
+    }
+
+    componentDidMount() {
+        this.getUser();
+    }
   render() {
     const { classes } = this.props;
     const {
         viewWork,
         createWork,
+        user
     } = this.state;
 
+    const{id} = this.props.location.state;
+    var name;
+    if(user.length > 0) name = user[0].name;
 
     if (viewWork){
         return <Redirect to={{
                             pathname: '/workoutviewer',
-                            state: {userType: 'trainer'}
+                            state: {userType: 'trainer', id: id}
                 }}/>
     }
 
     if (createWork){
         return <Redirect to={{
                             pathname: '/workoutcreator',
-                            state: {userType: 'trainer'}
+                            state: {userType: 'trainer', id: id}
         }}/>
+        //this.props.history.push('/workoutcreator');
     }
 
     return (
         <div className="App">
             <header className="App-header">
                 <h1>
-                    Welcome Trainer!                    
+                    Welcome {name}!                    
                 </h1>
             </header>
             <Button className={classes.backBut}

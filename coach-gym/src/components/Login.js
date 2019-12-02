@@ -28,7 +28,10 @@ class Login extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      books: [],
+      id: null,
+      exercises: [],
+      trainers: [],
+      clients: [],
       signIn: true,
       userType: "client",
       validLogin: false,
@@ -69,79 +72,46 @@ class Login extends Component {
     const password1 = event.target.password1.value;
     const password2 = event.target.password2.value;
     const name = event.target.name.value;
-    const birthdate = event.target.birthdate.value;
     const weightCurr = event.target.weightCurr.value;
-    const height = event.target.height.value;
     const weightGoal = event.target.weightGoal.value;
 
     var err = [false, false, false, false, false, 
       false, false, false, false, false, false, false];
 
-    //check bday
-    if (!this.isValidDate(birthdate)) {
-      console.log("Err: bday not valid");
-      err[4] = true;
-    }
-
-    //check name
-    for (var i = 0; i < name.length; i++){
-      if (!name.charAt(i).match(/^[0-9a-z]+$/)){
-          console.log("Err: name not valid");
-          err[3] = true;
-      }
-    }
-
+    var valid = true;
     //check passwords
     if(password1 !== password2){
       console.log("Err: passwords do not match");
       err[1] = true;
       err[2] = true;
+      valid = false;
     }
 
-    //check weights and height
+    //check weights
     if (weightCurr < 0){
       err[5] = true;
-    }
-    if (height < 0){
-      err[6] = true;
+      valid = false;
     }
     if (weightGoal < 0){
       err[7] = true;
+      valid = false;
+    }
+
+    this.getClients();
+    const { clients } = this.state;
+    if(valid){
+      console.log("adding client")
+      this.addClient(name, username, password1, weightCurr, weightGoal);
+      window.location.reload(true); 
     }
     
     this.setState ({ errors: err });
   }
 
-  //date validation source code:
-  //https://stackoverflow.com/questions/6177975/how-to-validate-date-with-format-mm-dd-yyyy-in-javascript
-  isValidDate = (dateString) => {
-    // Parse the date parts to integers
-    var parts = dateString.split("-");
-    var day = parseInt(parts[2], 10);
-    var month = parseInt(parts[1], 10);
-    var year = parseInt(parts[0], 10);
-
-    // Check the ranges of month and year
-    if(year < 1000 || year > 3000 ) {
-      console.log("Err: year out of range");
-      return false;
-    }
-    if (month === 0 || month > 12){
-      console.log("Err: month out of range")
-    }
-    var monthLength = [ 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 ];
-
-    // Adjust for leap years
-    if(year % 400 == 0 || (year % 100 != 0 && year % 4 == 0))
-        monthLength[1] = 29;
-
-    // Check the range of the day
-    return day > 0 && day <= monthLength[month - 1];
-  }
-
   validateTrainerForm = (event) => {
     //check if trainer form is complete
     event.preventDefault();
+    console.log("validating trainer");
     const username = event.target.username.value;
     const password1 = event.target.password1.value;
     const password2 = event.target.password2.value;
@@ -150,86 +120,131 @@ class Login extends Component {
     var err = [false, false, false, false, false, 
       false, false, false, false, false, false, false]
 
+      var valid = true;
+
     //check passwords
     if(password1 !== password2){
       console.log("Err: passwords do not match");
+      valid = false;
       err[9] = true;
       err[10] = true;
     }
 
-    //check name
-    for (var i = 0; i < name.length; i++){
-      if (!name.charAt(i).match(/^[0-9a-z]+$/)){
-          console.log("Err: name not valid");
-          err[11] = true;
+    this.getTrainers();
+    const { trainers } = this.state;
+    for(var i = 0; i < trainers.length;i++){
+      console.log(trainers[i].username);
+      if (username === trainers[i].username){
+        console.log("Err: username must be unique");
+        valid = false;
+        err[8] = true;
       }
     }
 
-    this.setState ({ errors: err });    
+    if(valid){
+      //put into database
+      this.addTrainer(name, username, password1);
+      window.location.reload(true); 
+    }
+    this.setState ({ errors: err });
   }
 
-  validateLogin = () => {
-    //CHECK IF USER IS IN DATABASE HERE, //
-    //THEN OPEN CORRECT PAGE             //
-    /* if username and password are in database{
-      if usertype is trainer {
-        open trainer home
-      } else {
-        open client home
+  addTrainer = (name, username, password) => {
+    fetch(`http://localhost:4000/add/trainer?name=${name}&username=${username}&password=${password}`)
+      .then(response => response.json())
+      .catch(err => console.error(err));
+  }
+
+  addClient = (name, username, password, weightCurr, weightGoal) => {
+    fetch(`http://localhost:4000/add/client?name=${name}&username=${username}&password=${password}&weightCurr=${weightCurr}&weightGoal=${weightGoal}`)
+      .then(response => response.json())
+      .catch(err => console.error(err));
+  }
+
+  validateLogin = (event) => {
+    event.preventDefault();
+    const username = event.target.username.value;
+    const password = event.target.password.value;
+
+    const{ trainers, clients } = this.state;
+   
+    for (var i = 0; i < trainers.length;i++){
+      if (username === trainers[i].username){
+        if(password === trainers[i].password){
+            // this.props.history.push('/trainer', {id: trainers[i].id});
+            this.setState({validLogin: true, userType: 'trainer', id: trainers[i].trainer_id});
+        }
       }
     }
-    */
-    const { validLogin } = this.state;
-    if (validLogin === false) {
-      this.props.history.push('/trainer');
+
+    for (var i = 0; i < clients.length;i++){
+      if (username === clients[i].username){
+        if(password === clients[i].password){
+            // this.props.history.push('/client', {id: clients[i].id});
+            console.log(clients[i].id);
+            this.setState({validLogin: true,  userType: 'client', id: clients[i].client_id});
+
+        }
+      }
     }
+    console.log("wrong login")
   }
 
-  // async componentDidMount() {
-	// 	try {
-	// 		let r = await fetch('/api/books');
-	// 		let books = await r.json();
-	// 		this.setState({ books });
-	// 	} catch (error) {
-	// 		console.log(error);
-	// 	}
-  // }
 
   componentDidMount() {
-    this.getBooks();
+    //this.getExercises();
+    this.getTrainers();
+    this.getClients();
   }
   
-  getBooks = () => {
-    fetch('http://localhost:4000/books' )
+  getExercises = () => {
+    fetch('http://localhost:4000/exercises' )
       .then(response => response.json())
       .then(({data}) => {
-        console.log(data);
-        this.setState({ books: data })
+        this.setState({ exercises: data })
       } )
       .catch(err => console.error(err));
   }
 
+  getTrainers = () => {
+    fetch('http://localhost:4000/trainers' )
+      .then(response => response.json())
+      .then(({data}) => {
+        this.setState({ trainers: data })
+      } )
+      .catch(err => console.error(err));
+  }
+
+  getClients = () => {
+    fetch('http://localhost:4000/clients' )
+      .then(response => response.json())
+      .then(({data}) => {
+        this.setState({ clients: data })
+      } )
+      .catch(err => console.error(err));
+  }
+
+
   render() {
     const {
-      books,
+      exercises,
       signIn,
       userType,
       validLogin,
       errors,
+      id
     } = this.state;
     const { classes } = this.props;
 
-    // if (validLogin === true){
-    //   return <Redirect to='/trainer' />
-    // }
+    if (validLogin){
+      return <Redirect to={{
+          pathname: `/${userType}`,
+          state: {id: id}
+        }}/>
+    }
     
     return (
       <div className="App">
-        <ul>
-            {books.map(book => {
-              return <li>{book.Title}</li>
-            })}
-        </ul>
         <div id="title">
           <header className="App-header">
           <h1>
@@ -346,19 +361,6 @@ class Login extends Component {
                     error={errors[3]}
                     className={classes.textField}
                   />
-                  <TextField
-                    required
-                    id="birthdate"
-                    label="Birthdate"
-                    type="date"
-                    error={errors[4]}
-                    defaultValue="2017-05-24T10:30"
-                    InputLabelProps={{
-                      shrink: true,
-                    }}
-                    margin="normal"
-                    className={classes.textField}
-                  />
                 </span>
               </div>
               <div>
@@ -372,19 +374,7 @@ class Login extends Component {
                       error={errors[5]}
                       className={classes.textField}
                     />
-      
-                  <TextField
-                    required 
-                    id="height"
-                    label="Height"
-                    type="number"
-                    margin="normal"
-                    error={errors[6]}
-                    className={classes.textField}
-                  />
-                </span>
-              </div>
-              <div>
+
               <TextField
                     required 
                     id="weightGoal"
@@ -394,7 +384,9 @@ class Login extends Component {
                     error={errors[7]}
                     className={classes.textField}
                   /> 
-              </div> 
+              </span>
+              </div>
+
               <div className="button">
                 <Button 
                   variant="contained" 

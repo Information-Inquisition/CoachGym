@@ -20,9 +20,13 @@ import {
     DialogContent,
     DialogContentText,
     DialogTitle,
+    Typography,
     Select,
-    MenuItem
+    MenuItem,
+    List,
+    ListItem
 } from '@material-ui/core';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 const styles = {
     backBut: {
@@ -33,6 +37,9 @@ const styles = {
     panel: {
         margin: 'auto',
         width: '65%',
+        position: 'relative',
+        top: '150px',
+        
     },
     nameInput: {
         position: 'relative',
@@ -47,6 +54,10 @@ const styles = {
     genButton: {
         position: 'relative',
         top: '50px',
+    },
+    list: {
+        display: 'flex',
+        alignItems: 'left',
     }
 }
 
@@ -58,6 +69,9 @@ class WorkoutCreator extends Component {
             isGenerated: false,
             difficulty: 'easy',
             exerType: 'free-weight',
+            back: false,
+            workout_id: [],
+            clients: [],
         };
 
         this.goBack = this.goBack.bind(this);
@@ -67,20 +81,82 @@ class WorkoutCreator extends Component {
 
     }
     goBack = () => {
-        this.props.history.push('/trainer');
+        this.setState({back: true});
     }
 
     handleGenerateWorkout = (event) => {
         const {targetMuscles, isGenerated} = this.state;
+        const { id } = this.props.location.state;
+        const client_id = event.target.clientid.value;
+        const name = event.target.workoutName.value;
         event.preventDefault();
-        console.log(targetMuscles);
 
-        //////////////////////////////////
-        // WORKOUT GENERATION HERE?
-        ////////////////////////////////////
+        var count = 0;
+        for (var i = 0; i < targetMuscles.length;i++){
+            if(targetMuscles[i] === true){
+                count++;
+            }
+        }
+
+        const numEach = 12/count;
+        var workout = [];
+
+        const{workout_id} = this.state;
+        const w_id = workout_id[0].last_id + 1;
+        console.log(w_id)
+        this.createWorkout(id, client_id, name);
+
+        if(targetMuscles[0] === true){
+            //arms
+            this.fillWorkout(0, numEach, w_id);
+        }
+        if(targetMuscles[1] === true){
+            //legs
+            this.fillWorkout(1, numEach, w_id);
+        }
+        if(targetMuscles[2] === true){
+            //abs
+            this.fillWorkout(2, numEach, w_id);
+        }
+        if(targetMuscles[3] === true){
+            //back
+            this.fillWorkout(3, numEach, w_id);
+        }
+
 
         this.setState({isGenerated: true});
+        window.location.reload(true); 
     }
+
+    createWorkout = (t_id, c_id, name) =>{
+        fetch(`http://localhost:4000/workouts/create?name=${name}&c_id=${c_id}&t_id=${t_id}` )
+        .then(response => response.json())
+        .catch(err => console.error(err));
+    }
+
+    getWorkoutID = () =>{
+        fetch(`http://localhost:4000/workouts/get/workout`)
+        .then(response => response.json())
+        .then(({data}) => {
+            console.log(data)
+            this.setState({ workout_id: data })
+          } )
+        .catch(err => console.error(err));
+    }
+
+    fillWorkout = (muscle, total, w_id) => {
+        fetch(`http://localhost:4000/workouts/get/exercises?muscle=${muscle}&total=${total}&w_id=${w_id}` )
+        .then(response => response.json())
+        .catch(err => console.error(err));
+    }
+    getClients = () => {
+        fetch('http://localhost:4000/clients' )
+          .then(response => response.json())
+          .then(({data}) => {
+            this.setState({ clients: data })
+          } )
+          .catch(err => console.error(err));
+      }
 
     handleClose = () => {
         this.setState({isGenerated: false});
@@ -110,15 +186,29 @@ class WorkoutCreator extends Component {
         this.setState({ exerType: event.target.value })
     }
 
+
+    componentDidMount = () => {
+        this.getWorkoutID();      
+        this.getClients();  
+      }
+
   render() {
     const { classes } = this.props;
-    const { userType } = this.props.location.state;
+    const { userType, id } = this.props.location.state;
     const {
         isGenerated,
         difficulty,
-        exerType
+        exerType,
+        back,
+        clients,
     } = this.state;
 
+    if(back){
+        return <Redirect to={{
+          pathname: '/trainer',
+          state: {userType: 'trainer', id: id}
+        }}/>
+      }
     
     return (
         <div className="App">
@@ -143,47 +233,18 @@ class WorkoutCreator extends Component {
                     className={classes.nameInput}
                     required
                     label="Workout Name"
-                    id="workout-name"
+                    id="workoutName"
                     margin="normal"
                 />
                 <TextField
                     className={classes.nameInput}
                     required
-                    label="Client Name"
-                    id="client-name"
+                    label="Client ID"
+                    id="clientid"
                     margin="normal"
+                    type="number"
                 />
-                <div className={classes.nameHeader}>
-                    <h2>
-                        Difficulty:
-                    </h2>
-                    <Select
-                    labelId="difficulty-lvl"
-                    id="difficulty-lvl"
-                    value={difficulty}
-                    onChange={this.handleDifficulty} 
-                    >
-                    <MenuItem value="easy">Easy</MenuItem>
-                    <MenuItem value="medium">Medium</MenuItem>
-                    <MenuItem value="hard">Hard</MenuItem>
-                    </Select>
-                </div>
-                <div className={classes.nameHeader}>
-                    <h2>
-                        Types of Exercises:
-                    </h2>
-                    <Select
-                    labelId="exercise-type"
-                    id="exercise-type"
-                    value={exerType}
-                    onChange={this.handleExerType} 
-                    >
-                    <MenuItem value="free-weight">Free Weight</MenuItem>
-                    <MenuItem value="body-weight">Body Weight</MenuItem>
-                    <MenuItem value="both">Both</MenuItem>
-                    </Select>
-                </div>
-
+    
                 <div className={classes.nameHeader}>
                     <h2>
                         Choose target muscle groups
@@ -250,6 +311,30 @@ class WorkoutCreator extends Component {
                 </Button>
             </FormControl>
             </form>
+
+            <div className={classes.panel}>
+                <ExpansionPanel>
+                    <ExpansionPanelSummary
+                        expandIcon={<ExpandMoreIcon />}
+                        aria-label="Expand"
+                        aria-controls="additional-actions1-content"
+                        id="additional-actions1-header"
+                    >
+                        Client List
+                    </ExpansionPanelSummary>
+                    <ExpansionPanelDetails>
+                    <Typography color="textSecondary">
+                        <List>
+                            {clients.map(client => (
+                                <ListItem>{client.name} : {client.client_id}</ListItem>
+                            ))}
+
+                        </List>
+                    </Typography>
+                    </ExpansionPanelDetails>
+                </ExpansionPanel>
+            </div>
+
 
             <Dialog
                 open={isGenerated}
