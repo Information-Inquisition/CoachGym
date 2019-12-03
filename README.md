@@ -1,3 +1,7 @@
 # CoachGym
 ## Description
-Web application for gym and workout management
+Web application to improve and digitilize the dymanic between personal trainers and their clients.
+--------------
+Xampp - Host local MySql server  
+HeidiSql - Visualize database  
+Node.js - Middleware  
